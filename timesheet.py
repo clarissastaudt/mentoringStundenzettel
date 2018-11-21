@@ -4,10 +4,10 @@ import glob
 
 
 # maximal amount of hours allowed in a month
-max_hours_per_month = 2
+max_hours_per_month = 20
 
 # maximal amount of hours allowed in a calendar week
-max_hours_per_week = 1
+max_hours_per_week = 10
 
 
 """
