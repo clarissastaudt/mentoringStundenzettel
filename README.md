@@ -30,6 +30,7 @@ Open the 'output' directory. The files created automatically for each student co
 #### CSV files generated from the Excel sheet
 
 The files used as an input for the Python program have the following properties:
+
 | Example | stundenzettel_csv/FUB_stundenzettel_Mustermann.csv |
 |-----------------|-------------------|
 | File format     | csv               |
