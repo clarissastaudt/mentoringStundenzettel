@@ -57,4 +57,4 @@ The files used as an input for the Python program have the following properties:
 ## License
 **Implementation:** Clarissa Elisabeth Staudt (TU Berlin & FU Berlin)
 
-Distributed under GPLv3 License. See [LICENSE](license) for more information.
+Distributed under GPLv3 License. See LICENSE for more information.
