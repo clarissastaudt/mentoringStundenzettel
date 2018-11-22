@@ -41,7 +41,7 @@ def preprocessing():
                             preprocessed += new_string
                     count += 1
                 
-                path = "input/studentData/" + name + ".csv"
+                path = "preprocessing/studentData/" + name + ".csv"
                 write_to_file(path, preprocessed)
             
         except: 
@@ -70,26 +70,27 @@ def extract_student_name(line):
 """
 Calculate weekly sum of hours worked.
 """
-def work_weekly(student, kw, kws):
-    stud = student["date"].tolist()
-    days = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
-    for index, row in kw.iterrows():
-        for day in days:
-            # check if the current date is a date on which the student worked
-            worked = [row[day] == s for s in stud]
-            if any(worked):
-                e = student.loc[student['date'] == row[day]]
-                cal_week = row["Kalenderwoche"] + " " + str(row["Jahr"])
-                datelist = e["hours"].tolist()
-                minutes = int(datelist[0][-2:])/60
-                hours = float(datelist[0][:-3]) + minutes
-                # add worked hours to the calenderweek
-                if cal_week in kws:
-                    kws[cal_week] += float(hours)
+def work_weekly(student, kw, worked_weekly):
+    
+    for index, row in student.iterrows():
+            
+        # calculate hours worked
+        minutes = int(row["hours"][-2:])/60
+        hours = float(row["hours"][:-3]) + minutes
+        
+        # iterate over all calendar weeks and check which calendar week our date matches
+        for in_kw, row_kw in kw.iterrows(): 
+            cur_kw = row_kw.tolist()
+            if row["date"] in cur_kw:
+                matching_kw = row_kw[0] + " " + str(row_kw[1])
+                # add working time to calendar week
+                if matching_kw in worked_weekly:
+                    worked_weekly[matching_kw] += hours
                 else:
-                    kws[cal_week] = float(hours)
-    return kws
-
+                    worked_weekly[matching_kw] = hours
+                break
+                    
+    return worked_weekly
 
 """
 Calculate monthly sum of hours worked.
@@ -127,7 +128,7 @@ def max_hours_weekly(student, kw, errors):
     
     err_weeks = [el for el in worked_weekly if worked_weekly[el] > max_hours_per_week]
     error_max_hours_per_week = str.join("\n", err_weeks)
-    
+
     errors += "Worked more than " + str(max_hours_per_week) + " hours in the following weeks:\n" + error_max_hours_per_week
     
     return errors
@@ -171,13 +172,13 @@ def main():
     preprocessing()
     
     print("2) Calculating results")
-    print("- Reading input files from input directory...")
+    print("- Reading files from the preprocessing directory...")
     
     # read in calendar weeks
-    kw = pd.read_csv('input/KW.csv', sep=";")
+    kw = pd.read_csv('preprocessing/KW.csv', sep=";")
 
     # read in student data
-    stud_path = "input/studentData/*.csv"
+    stud_path = "preprocessing/studentData/*.csv"
     txt_files = glob.glob(stud_path)
     
     print("  Found {} files in {} directory.".format(len(txt_files), stud_path[:-6]))
@@ -192,7 +193,7 @@ def main():
         errors = max_hours_weekly(student, kw, errors)
         
         # write all errors to output file
-        output_path = "output/" + file[18:-4] + "_result.txt"
+        output_path = "output/" + file[26:-4] + "_result.txt"
         write_to_file(output_path, errors)
         
     print("\nDone! Results were written to the output directory.")
